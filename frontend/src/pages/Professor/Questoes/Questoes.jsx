@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../../../components/Navbar/Navbar';
+import api from '../../../services/api';
+import './Questoes.css';
+
+const Questoes = () => {
+  const [questoes, setQuestoes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    carregarQuestoes();
+  }, []);
+
+  const carregarQuestoes = async () => {
+    try {
+      const response = await api.get('/professor/questoes');
+      setQuestoes(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar questões:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeletar = async (id) => {
+    if (window.confirm('Tem certeza que deseja deletar esta questão?')) {
+      try {
+        await api.delete(`/professor/questoes/${id}`);
+        carregarQuestoes();
+      } catch (error) {
+        console.error('Erro ao deletar questão:', error);
+        alert('Erro ao deletar questão');
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="container">
+          <p>Carregando...</p>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="container questoes-container">
+        <div className="questoes-header">
+          <h1>Banco de Questões</h1>
+          <button 
+            className="btn btn-primary"
+            onClick={() => navigate('/professor/questoes/nova')}
+          >
+            <i className="fas fa-plus"></i> Nova Questão
+          </button>
+        </div>
+
+        {questoes.length === 0 ? (
+          <div className="questoes-empty">
+            <i className="fas fa-question-circle"></i>
+            <p>Você ainda não cadastrou nenhuma questão</p>
+            <button 
+              className="btn btn-primary"
+              onClick={() => navigate('/professor/questoes/nova')}
+            >
+              Cadastrar Primeira Questão
+            </button>
+          </div>
+        ) : (
+          <div className="questoes-list">
+            {questoes.map((questao) => (
+              <div key={questao.id} className="questao-card card">
+                <div className="questao-card-header">
+                  <div className="questao-badges">
+                    <span className="badge badge-materia">{questao.materia}</span>
+                    {questao.topico && (
+                      <span className="badge badge-topico">{questao.topico}</span>
+                    )}
+                    <span className={`badge badge-${questao.nivelDificuldade?.toLowerCase()}`}>
+                      {questao.nivelDificuldade}
+                    </span>
+                  </div>
+                  <div className="questao-pontuacao">
+                    {questao.pontuacao} {questao.pontuacao === 1 ? 'ponto' : 'pontos'}
+                  </div>
+                </div>
+
+                <div className="questao-card-body">
+                  <p className="questao-enunciado">{questao.enunciado}</p>
+                  
+                  {questao.alternativas && questao.alternativas.length > 0 && (
+                    <div className="questao-alternativas">
+                      {questao.alternativas.map((alt) => (
+                        <div 
+                          key={alt.id} 
+                          className={`alternativa-preview ${alt.correta ? 'correta' : ''}`}
+                        >
+                          <strong>{alt.letra})</strong> {alt.textoAlternativa}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="questao-card-actions">
+                  <button 
+                    className="btn-icon"
+                    onClick={() => navigate(`/professor/questoes/editar/${questao.id}`)}
+                    title="Editar"
+                  >
+                    <i className="fas fa-edit"></i> Editar
+                  </button>
+                  <button 
+                    className="btn-icon btn-danger"
+                    onClick={() => handleDeletar(questao.id)}
+                    title="Deletar"
+                  >
+                    <i className="fas fa-trash"></i> Deletar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default Questoes;
