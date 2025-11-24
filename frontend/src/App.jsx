@@ -10,6 +10,8 @@ import EditarAvaliacao from './pages/Professor/Avaliacoes/EditarAvaliacao';
 import Questoes from './pages/Professor/Questoes/Questoes';
 import CadastroQuestao from './pages/Professor/Questoes/CadastroQuestao';
 import Professores from './pages/Admin/Professores/Professores';
+import QuestoesAdmin from './pages/Admin/Questoes/Questoes';
+import Materias from './pages/Admin/Materias/Materias';
 
 // Componente para redirecionar usuários autenticados da página de login
 const LoginRoute = ({ children }) => {
@@ -85,6 +87,22 @@ function App() {
             element={
               <ProtectedRoute requiredRole="ADMIN">
                 <Professores />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/questoes" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <QuestoesAdmin />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/materias" 
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Materias />
               </ProtectedRoute>
             } 
           />

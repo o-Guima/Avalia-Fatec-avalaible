@@ -5,8 +5,11 @@ import './Professores.css';
 
 const Professores = () => {
   const [professores, setProfessores] = useState([]);
+  const [materias, setMaterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showMateriasModal, setShowMateriasModal] = useState(false);
+  const [professorAtual, setProfessorAtual] = useState(null);
   const [editando, setEditando] = useState(null);
   const [professor, setProfessor] = useState({
     nome: '',
@@ -17,8 +20,23 @@ const Professores = () => {
   });
 
   useEffect(() => {
-    carregarProfessores();
+    carregarDados();
   }, []);
+
+  const carregarDados = async () => {
+    try {
+      const [professoresRes, materiasRes] = await Promise.all([
+        api.get('/admin/professores'),
+        api.get('/admin/materias')
+      ]);
+      setProfessores(professoresRes.data);
+      setMaterias(materiasRes.data);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const carregarProfessores = async () => {
     try {
@@ -26,8 +44,6 @@ const Professores = () => {
       setProfessores(response.data);
     } catch (error) {
       console.error('Erro ao carregar professores:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -96,6 +112,36 @@ const Professores = () => {
     }
   };
 
+  const abrirModalMaterias = (prof) => {
+    setProfessorAtual(prof);
+    setShowMateriasModal(true);
+  };
+
+  const fecharModalMaterias = () => {
+    setShowMateriasModal(false);
+    setProfessorAtual(null);
+  };
+
+  const handleAssociarMateria = async (materiaId) => {
+    try {
+      await api.post(`/admin/materias/${materiaId}/professores/${professorAtual.id}`);
+      carregarProfessores();
+    } catch (error) {
+      console.error('Erro ao associar matéria:', error);
+      alert('Erro ao associar matéria');
+    }
+  };
+
+  const handleDesassociarMateria = async (materiaId) => {
+    try {
+      await api.delete(`/admin/materias/${materiaId}/professores/${professorAtual.id}`);
+      carregarProfessores();
+    } catch (error) {
+      console.error('Erro ao desassociar matéria:', error);
+      alert('Erro ao desassociar matéria');
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -128,6 +174,7 @@ const Professores = () => {
                 <th>Nome</th>
                 <th>Login</th>
                 <th>Email</th>
+                <th>Matérias</th>
                 <th>Status</th>
                 <th>Ações</th>
               </tr>
@@ -139,12 +186,24 @@ const Professores = () => {
                   <td>{prof.login}</td>
                   <td>{prof.email || '-'}</td>
                   <td>
+                    <span className="badge badge-info">
+                      {prof.materias?.length || 0} matéria(s)
+                    </span>
+                  </td>
+                  <td>
                     <span className={`status-badge ${prof.ativo ? 'ativo' : 'inativo'}`}>
                       {prof.ativo ? 'Ativo' : 'Inativo'}
                     </span>
                   </td>
                   <td>
                     <div className="table-actions">
+                      <button 
+                        className="btn-icon btn-secondary"
+                        onClick={() => abrirModalMaterias(prof)}
+                        title="Gerenciar Matérias"
+                      >
+                        <i className="fas fa-book"></i>
+                      </button>
                       <button 
                         className="btn-icon"
                         onClick={() => abrirModal(prof)}
@@ -252,6 +311,47 @@ const Professores = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Matérias */}
+        {showMateriasModal && professorAtual && (
+          <div className="modal-overlay" onClick={fecharModalMaterias}>
+            <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Matérias - {professorAtual.nome}</h2>
+                <button className="modal-close" onClick={fecharModalMaterias}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+
+              <div className="materias-list">
+                {materias.map((materia) => {
+                  const isAssociada = professorAtual.materias?.some(m => m.id === materia.id);
+                  return (
+                    <div key={materia.id} className="materia-item">
+                      <div className="materia-info">
+                        <i className="fas fa-book"></i>
+                        <div>
+                          <strong>{materia.nome}</strong>
+                          {materia.descricao && <span className="materia-descricao">{materia.descricao}</span>}
+                        </div>
+                      </div>
+                      <button
+                        className={`btn ${isAssociada ? 'btn-danger' : 'btn-primary'}`}
+                        onClick={() => isAssociada ? handleDesassociarMateria(materia.id) : handleAssociarMateria(materia.id)}
+                      >
+                        {isAssociada ? (
+                          <><i className="fas fa-minus-circle"></i> Remover</>
+                        ) : (
+                          <><i className="fas fa-plus-circle"></i> Adicionar</>
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

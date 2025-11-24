@@ -16,6 +16,8 @@ public class AvaliacaoRequest {
     private String titulo;
     
     private String turma;
+    private String nomeFaculdade;
+    private String logoFaculdade;
     
     @NotEmpty(message = "Selecione ao menos uma questão")
     private List<Long> questoesIds;

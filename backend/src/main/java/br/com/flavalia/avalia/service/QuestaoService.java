@@ -25,6 +25,10 @@ public class QuestaoService {
         return questaoRepository.findByProfessorId(professorId);
     }
     
+    public List<Questao> listarTodas() {
+        return questaoRepository.findAll();
+    }
+    
     public Questao buscarPorId(Long id) {
         return questaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Questão não encontrada"));
@@ -109,7 +113,8 @@ public class QuestaoService {
     public void deletarQuestao(Long id, Long professorId) {
         Questao questao = buscarPorId(id);
         
-        if (!questao.getProfessor().getId().equals(professorId)) {
+        // Se professorId for null, é admin e pode deletar qualquer questão
+        if (professorId != null && !questao.getProfessor().getId().equals(professorId)) {
             throw new RuntimeException("Você não tem permissão para deletar esta questão");
         }
         

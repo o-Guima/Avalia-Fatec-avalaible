@@ -1,26 +1,71 @@
-.professores-container {
+.materias-container {
   padding: var(--spacing-xxl) var(--spacing-xl);
   animation: fadeIn 0.5s ease;
 }
 
-.professores-header {
+.materias-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xxl);
 }
 
-.professores-header h1 {
+.materias-header h1 {
   margin: 0;
 }
 
-.professores-table-container {
+.materias-table-container {
+  padding: 1.5rem;
   overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: #f8f9fa;
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
 }
 
 .table-actions {
   display: flex;
   gap: var(--spacing-sm);
+}
+
+.btn-icon.btn-secondary {
+  background-color: var(--color-gray-light);
+  color: var(--color-dark-bg);
+}
+
+.btn-icon.btn-secondary:hover {
+  background-color: #888;
+}
+
+.badge-info {
+  background-color: var(--color-red);
+  color: var(--color-white);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .status-badge {
@@ -40,7 +85,6 @@
   color: var(--color-error-text);
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -64,6 +108,10 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease;
+}
+
+.modal-large {
+  max-width: 700px;
 }
 
 .modal-header {
@@ -96,6 +144,22 @@
   gap: var(--spacing-lg);
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+.form-group textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
 .form-group-checkbox {
   display: flex;
   align-items: center;
@@ -122,26 +186,13 @@
   margin-top: var(--spacing-lg);
 }
 
-.badge-info {
-  background-color: var(--color-red);
-  color: var(--color-white);
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.modal-large {
-  max-width: 700px;
-}
-
-.materias-list {
+.professores-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.materia-item {
+.professor-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -152,47 +203,38 @@
   background: var(--color-dark-bg);
 }
 
-.materia-item:hover {
+.professor-item:hover {
   border-color: var(--color-red);
 }
 
-.materia-info {
+.professor-info {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.materia-info i {
+.professor-info i {
   font-size: 2rem;
   color: var(--color-red);
 }
 
-.materia-info div {
+.professor-info div {
   display: flex;
   flex-direction: column;
 }
 
-.materia-info strong {
+.professor-info strong {
   color: var(--color-white);
   font-size: 1.1rem;
 }
 
-.materia-descricao {
+.professor-login {
   color: var(--color-gray-light);
   font-size: 0.9rem;
 }
 
-.btn-icon.btn-secondary {
-  background-color: var(--color-gray-light);
-  color: var(--color-dark-bg);
-}
-
-.btn-icon.btn-secondary:hover {
-  background-color: #888;
-}
-
 @media (max-width: 768px) {
-  .professores-header {
+  .materias-header {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: stretch;
@@ -207,13 +249,8 @@
     flex-direction: column;
   }
 
-  .materia-item {
+  .professor-item {
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .materia-item .btn {
-    width: 100%;
-    justify-content: center;
   }
 }

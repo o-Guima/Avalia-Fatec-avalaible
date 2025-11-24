@@ -78,6 +78,8 @@ public class AvaliacaoService {
         
         avaliacao.setTitulo(request.getTitulo());
         avaliacao.setTurma(request.getTurma());
+        avaliacao.setNomeFaculdade(request.getNomeFaculdade());
+        avaliacao.setLogoFaculdade(request.getLogoFaculdade());
         avaliacao.setQuestoes(questoes);
         
         return avaliacaoRepository.save(avaliacao);

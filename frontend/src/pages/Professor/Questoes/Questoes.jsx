@@ -24,18 +24,6 @@ const Questoes = () => {
     }
   };
 
-  const handleDeletar = async (id) => {
-    if (window.confirm('Tem certeza que deseja deletar esta questão?')) {
-      try {
-        await api.delete(`/professor/questoes/${id}`);
-        carregarQuestoes();
-      } catch (error) {
-        console.error('Erro ao deletar questão:', error);
-        alert('Erro ao deletar questão');
-      }
-    }
-  };
-
   if (loading) {
     return (
       <>
@@ -115,13 +103,6 @@ const Questoes = () => {
                     title="Editar"
                   >
                     <i className="fas fa-edit"></i> Editar
-                  </button>
-                  <button 
-                    className="btn-icon btn-danger"
-                    onClick={() => handleDeletar(questao.id)}
-                    title="Deletar"
-                  >
-                    <i className="fas fa-trash"></i> Deletar
                   </button>
                 </div>
               </div>

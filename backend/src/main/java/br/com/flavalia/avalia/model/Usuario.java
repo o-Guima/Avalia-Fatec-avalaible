@@ -54,6 +54,14 @@ public class Usuario {
     @OneToMany(mappedBy = "professor", cascade = CascadeType.ALL)
     private List<Avaliacao> avaliacoes = new ArrayList<>();
     
+    @ManyToMany
+    @JoinTable(
+        name = "professor_materias",
+        joinColumns = @JoinColumn(name = "professor_id"),
+        inverseJoinColumns = @JoinColumn(name = "materia_id")
+    )
+    private List<Materia> materias = new ArrayList<>();
+    
     @PrePersist
     protected void onCreate() {
         criadoEm = LocalDateTime.now();

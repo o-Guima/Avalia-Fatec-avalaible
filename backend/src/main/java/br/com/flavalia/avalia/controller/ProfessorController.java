@@ -1,11 +1,14 @@
 package br.com.flavalia.avalia.controller;
 
+import br.com.flavalia.avalia.model.Materia;
+
 import br.com.flavalia.avalia.dto.AvaliacaoRequest;
 import br.com.flavalia.avalia.dto.QuestaoRequest;
 import br.com.flavalia.avalia.model.Avaliacao;
 import br.com.flavalia.avalia.model.Questao;
 import br.com.flavalia.avalia.security.JwtUtil;
 import br.com.flavalia.avalia.service.AvaliacaoService;
+import br.com.flavalia.avalia.service.MateriaService;
 import br.com.flavalia.avalia.service.PdfService;
 import br.com.flavalia.avalia.service.QuestaoService;
 import jakarta.validation.Valid;
@@ -33,11 +36,21 @@ public class ProfessorController {
     private PdfService pdfService;
     
     @Autowired
+    private MateriaService materiaService;
+    
+    @Autowired
     private JwtUtil jwtUtil;
     
     private Long extrairProfessorId(String token) {
         String jwt = token.substring(7);
         return jwtUtil.extractClaim(jwt, claims -> claims.get("userId", Long.class));
+    }
+    
+    // ===== MATÉRIAS =====
+    
+    @GetMapping("/materias")
+    public ResponseEntity<List<Materia>> listarMateriasAtivas() {
+        return ResponseEntity.ok(materiaService.listarAtivas());
     }
     
     // ===== QUESTÕES =====

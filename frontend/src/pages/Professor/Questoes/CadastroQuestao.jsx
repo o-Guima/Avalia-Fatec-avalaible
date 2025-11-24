@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/Navbar/Navbar';
 import api from '../../../services/api';
@@ -6,6 +6,7 @@ import './CadastroQuestao.css';
 
 const CadastroQuestao = () => {
   const navigate = useNavigate();
+  const [materias, setMaterias] = useState([]);
   const [questao, setQuestao] = useState({
     materia: '',
     topico: '',
@@ -21,6 +22,19 @@ const CadastroQuestao = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    carregarMaterias();
+  }, []);
+
+  const carregarMaterias = async () => {
+    try {
+      const response = await api.get('/professor/materias');
+      setMaterias(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar matérias:', error);
+    }
+  };
 
   const handleChange = (e) => {
     setQuestao({
@@ -114,16 +128,21 @@ const CadastroQuestao = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="materia">Matéria *</label>
-              <input
-                type="text"
+              <select
                 id="materia"
                 name="materia"
                 className="input"
                 value={questao.materia}
                 onChange={handleChange}
-                placeholder="Ex: Cálculo I, Estrutura de Dados..."
                 required
-              />
+              >
+                <option value="">Selecione uma matéria</option>
+                {materias.map((mat) => (
+                  <option key={mat.id} value={mat.nome}>
+                    {mat.nome}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">

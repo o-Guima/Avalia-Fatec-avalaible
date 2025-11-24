@@ -37,9 +37,17 @@ const Navbar = () => {
           )}
 
           {isAdmin && (
-            <Link to="/admin/professores" className="navbar-link">
-              <i className="fas fa-user"></i> Professores
-            </Link>
+            <>
+              <Link to="/admin/professores" className="navbar-link">
+                <i className="fas fa-user"></i> Professores
+              </Link>
+              <Link to="/admin/materias" className="navbar-link">
+                <i className="fas fa-book"></i> Matérias
+              </Link>
+              <Link to="/admin/questoes" className="navbar-link">
+                <i className="fas fa-question-circle"></i> Questões
+              </Link>
+            </>
           )}
 
           <div className="navbar-user">

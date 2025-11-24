@@ -1,5 +1,7 @@
 package br.com.flavalia.avalia.service;
 
+import br.com.flavalia.avalia.dto.MateriaSimplificadaDTO;
+import br.com.flavalia.avalia.dto.UsuarioDTO;
 import br.com.flavalia.avalia.model.Usuario;
 import br.com.flavalia.avalia.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -21,8 +24,28 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
     
-    public List<Usuario> listarProfessores() {
-        return usuarioRepository.findByPerfil(Usuario.Perfil.PROFESSOR);
+    public List<UsuarioDTO> listarProfessores() {
+        return usuarioRepository.findByPerfil(Usuario.Perfil.PROFESSOR).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    private UsuarioDTO convertToDTO(Usuario usuario) {
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setId(usuario.getId());
+        dto.setNome(usuario.getNome());
+        dto.setLogin(usuario.getLogin());
+        dto.setEmail(usuario.getEmail());
+        dto.setPerfil(usuario.getPerfil());
+        dto.setAtivo(usuario.getAtivo());
+        dto.setCriadoEm(usuario.getCriadoEm());
+        
+        List<MateriaSimplificadaDTO> materias = usuario.getMaterias().stream()
+                .map(mat -> new MateriaSimplificadaDTO(mat.getId(), mat.getNome()))
+                .collect(Collectors.toList());
+        dto.setMaterias(materias);
+        
+        return dto;
     }
     
     public Usuario buscarPorId(Long id) {
