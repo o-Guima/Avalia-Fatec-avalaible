@@ -1,6 +1,8 @@
 package br.com.flavalia.avalia.controller;
 
 import br.com.flavalia.avalia.dto.MateriaDTO;
+import br.com.flavalia.avalia.dto.ProfessorSimplificadoDTO;
+import br.com.flavalia.avalia.dto.QuestaoDTO;
 import br.com.flavalia.avalia.dto.UsuarioDTO;
 import br.com.flavalia.avalia.model.Materia;
 import br.com.flavalia.avalia.model.Questao;
@@ -77,8 +79,36 @@ public class AdminController {
     // ===== QUESTÕES =====
     
     @GetMapping("/questoes")
-    public ResponseEntity<List<Questao>> listarTodasQuestoes() {
-        return ResponseEntity.ok(questaoService.listarTodas());
+    public ResponseEntity<List<QuestaoDTO>> listarTodasQuestoes() {
+        List<Questao> questoes = questaoService.listarTodas();
+        List<QuestaoDTO> questoesDTO = questoes.stream()
+                .map(this::convertToDTO)
+                .toList();
+        return ResponseEntity.ok(questoesDTO);
+    }
+    
+    private QuestaoDTO convertToDTO(Questao questao) {
+        QuestaoDTO dto = new QuestaoDTO();
+        dto.setId(questao.getId());
+        dto.setMateria(questao.getMateria());
+        dto.setTopico(questao.getTopico());
+        dto.setNivelDificuldade(questao.getNivelDificuldade());
+        dto.setPontuacao(questao.getPontuacao());
+        dto.setEnunciado(questao.getEnunciado());
+        dto.setTipoQuestao(questao.getTipoQuestao());
+        dto.setAlternativas(questao.getAlternativas());
+        dto.setCriadaEm(questao.getCriadaEm());
+        
+        if (questao.getProfessor() != null) {
+            ProfessorSimplificadoDTO prof = new ProfessorSimplificadoDTO(
+                questao.getProfessor().getId(),
+                questao.getProfessor().getNome(),
+                questao.getProfessor().getLogin()
+            );
+            dto.setProfessor(prof);
+        }
+        
+        return dto;
     }
     
     @DeleteMapping("/questoes/{id}")

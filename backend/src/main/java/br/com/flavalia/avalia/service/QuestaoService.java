@@ -22,7 +22,21 @@ public class QuestaoService {
     private UsuarioRepository usuarioRepository;
     
     public List<Questao> listarTodasDoProfessor(Long professorId) {
-        return questaoRepository.findByProfessorId(professorId);
+        Usuario professor = usuarioRepository.findById(professorId)
+                .orElseThrow(() -> new RuntimeException("Professor não encontrado"));
+        
+        // Pega as matérias do professor
+        List<String> materiasProfessor = professor.getMaterias().stream()
+                .map(m -> m.getNome())
+                .toList();
+        
+        if (materiasProfessor.isEmpty()) {
+            // Se não tem matérias, retorna só as próprias questões
+            return questaoRepository.findByProfessorId(professorId);
+        }
+        
+        // Retorna questões de todos os professores que compartilham as mesmas matérias
+        return questaoRepository.findByMateriasCompartilhadas(materiasProfessor);
     }
     
     public List<Questao> listarTodas() {
