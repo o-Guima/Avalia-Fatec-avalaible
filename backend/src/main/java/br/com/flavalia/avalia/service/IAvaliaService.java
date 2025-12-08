@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient; // <--- Mudança Principal
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class IAvaliaService {
     
     private static final Logger logger = LoggerFactory.getLogger(IAvaliaService.class);
     
-    private final WebClient webClient;
+    private final RestClient restClient; // <--- Mudou de WebClient para RestClient
     private final ObjectMapper objectMapper;
     
     @Value("${gemini.api.key}")
@@ -54,7 +55,8 @@ public class IAvaliaService {
         """;
     
     public IAvaliaService() {
-        this.webClient = WebClient.builder()
+        // Mudança no construtor para usar RestClient builder
+        this.restClient = RestClient.builder()
                 .baseUrl("https://generativelanguage.googleapis.com/v1beta/models")
                 .build();
         this.objectMapper = new ObjectMapper();
@@ -80,14 +82,14 @@ public class IAvaliaService {
         try {
             logger.info("Enviando requisição para Gemini API - Modelo: {}", model);
             
-            String response = webClient.post()
+            // Sintaxe fluente do RestClient (muito parecida com WebClient)
+            String response = restClient.post()
                     .uri("/" + model + ":generateContent")
-                    .header("Content-Type", "application/json")
+                    .contentType(MediaType.APPLICATION_JSON)
                     .header("X-goog-api-key", apiKey)
-                    .bodyValue(requestBody)
+                    .body(requestBody)
                     .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+                    .body(String.class); // <--- Aqui muda: não precisa de .block() pois é síncrono
             
             JsonNode root = objectMapper.readTree(response);
             
